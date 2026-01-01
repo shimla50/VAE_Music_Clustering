@@ -12,7 +12,6 @@ This project implements an unsupervised learning pipeline for clustering hybrid 
 ## Requirements
 
 To install the required libraries, run:
-```bash
 pip install -r requirements.txt
  
 
