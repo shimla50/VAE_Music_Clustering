@@ -16,7 +16,7 @@ To install the required libraries, run:
 pip install -r requirements.txt
  
 
-```md
+
 ## Dataset
 
 This project uses the Hugging Face dataset: **ccmusic-database/music_genre**  
@@ -24,8 +24,6 @@ Dataset page: https://huggingface.co/datasets/ccmusic-database/music_genre
 
 The dataset is not included in this GitHub repository because it is large.
 It will be downloaded automatically when running the scripts below.
-
----
 
 ## Results
 
@@ -41,18 +39,19 @@ We evaluated the clustering quality using multiple metrics.
 - Silhouette Score: 0.1508
 - Calinski-Harabasz Index: 8947.86
 
-The VAE-based latent representation shows improved clustering performance
-compared to the PCA baseline, indicating that the VAE learns a more
-discriminative latent space for music features.
-
----
-
 ## Latent Space Visualization
 
 The following figure shows the t-SNE visualization of the VAE latent space
 colored by KMeans cluster assignments.
 
 ![t-SNE of VAE Latent Space](results/tsne_vae.png)
+
+## Conclusion
+
+This project demonstrates that Variational Autoencoders can effectively learn
+meaningful latent representations for unsupervised music clustering, achieving
+better performance than traditional PCA-based methods.
+
 
 ---
 
