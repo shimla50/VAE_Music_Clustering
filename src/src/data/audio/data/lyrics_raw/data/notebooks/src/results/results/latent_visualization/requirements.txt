@@ -1,0 +1,12 @@
+numpy
+pandas
+scikit-learn
+matplotlib
+librosa
+tqdm
+ffmpeg-python
+faster-whisper
+torch
+torchvision
+torchaudio
+umap-learn
