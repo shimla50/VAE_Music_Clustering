@@ -1,0 +1,22 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+.venv/
+venv/
+
+# Data files (DO NOT UPLOAD DATASET)
+data/
+*.npy
+
+# Hugging Face cache
+.cache/
+**/.cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+download_dataset.py
+notebooks/
