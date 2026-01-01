@@ -16,7 +16,7 @@ To install the required libraries, run:
 pip install -r requirements.txt
  
 
-
+```md
 ## Dataset
 
 This project uses the Hugging Face dataset: **ccmusic-database/music_genre**  
@@ -25,7 +25,7 @@ Dataset page: https://huggingface.co/datasets/ccmusic-database/music_genre
 The dataset is not included in this GitHub repository because it is large.
 It will be downloaded automatically when running the scripts below.
 
-
+---
 
 ## Results
 
@@ -45,16 +45,16 @@ The VAE-based latent representation shows improved clustering performance
 compared to the PCA baseline, indicating that the VAE learns a more
 discriminative latent space for music features.
 
+---
 
-
-### Latent Space Visualization
+## Latent Space Visualization
 
 The following figure shows the t-SNE visualization of the VAE latent space
 colored by KMeans cluster assignments.
 
 ![t-SNE of VAE Latent Space](results/tsne_vae.png)
 
-
+---
 
 ## Conclusion
 
