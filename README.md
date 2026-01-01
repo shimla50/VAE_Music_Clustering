@@ -17,6 +17,16 @@ pip install -r requirements.txt
  
 
 
+## Dataset
+
+This project uses the Hugging Face dataset: **ccmusic-database/music_genre**  
+Dataset page: https://huggingface.co/datasets/ccmusic-database/music_genre
+
+The dataset is not included in this GitHub repository because it is large.
+It will be downloaded automatically when running the scripts below.
+
+
+
 ## Results
 
 We evaluated the clustering quality using multiple metrics.
