@@ -105,12 +105,21 @@ These metrics are suitable for unsupervised clustering without ground-truth labe
 
 ## How to Reproduce the Medium Task
 
-Run the notebooks in the following order:
+### Reproducing without included data
 
-1. `medium_01_data_prep.ipynb`  
-2. `medium_02_lyrics_embeddings.ipynb`  
-3. `medium_03_audio_mfcc.ipynb`  
-4. `medium_04_vae_clustering_clean.ipynb`
+Due to the large size of the dataset, audio files and intermediate data
+are not included in this GitHub repository.
+
+To reproduce the medium task experiments, the required data must be placed
+manually in the following directory structure:
+
+Once the data is placed correctly, run the notebooks in the following order:
+
+1. `notebooks/medium_01_data_prep.ipynb`
+2. `notebooks/medium_02_lyrics_embeddings.ipynb`
+3. `notebooks/medium_03_audio_mfcc.ipynb`
+4. `notebooks/medium_04_vae_clustering_clean.ipynb`
+
 
 **Note:**  
 The dataset files (audio, lyrics, and intermediate features) are not included.  
