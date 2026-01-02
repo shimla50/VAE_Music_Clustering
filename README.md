@@ -16,64 +16,132 @@ pip install -r requirements.txt
  
 
 
-```md
-## Dataset
+# VAE Music Clustering Project
 
-This project uses the Hugging Face dataset: **ccmusic-database/music_genre**  
-Dataset page: https://huggingface.co/datasets/ccmusic-database/music_genre
-
-The dataset is not included in this GitHub repository because it is large.
-It will be downloaded automatically when running the scripts below.
-
-<<<<<<< Updated upstream
-=======
----
-
->>>>>>> Stashed changes
-## Results
-
-We evaluated the clustering quality using multiple metrics.
-
-### VAE + KMeans
-- Silhouette Score: 0.1827
-- Calinski-Harabasz Index: 32353.64
-- Adjusted Rand Index (ARI): 0.0980
-- Normalized Mutual Information (NMI): 0.2013
-
-### PCA + KMeans (Baseline)
-- Silhouette Score: 0.1508
-- Calinski-Harabasz Index: 8947.86
-
-<<<<<<< Updated upstream
-=======
-The VAE-based latent representation shows improved clustering performance
-compared to the PCA baseline, indicating that the VAE learns a more
-discriminative latent space for music features.
+This project implements an unsupervised learning pipeline for clustering music tracks using Variational Autoencoders (VAE).  
+The work is divided into two parts: **Easy Task** and **Medium Task**, following the course project requirements.
 
 ---
 
->>>>>>> Stashed changes
-## Latent Space Visualization
+## Project Overview
 
-The following figure shows the t-SNE visualization of the VAE latent space
-colored by KMeans cluster assignments.
+- **Easy Task**: Basic VAE-based clustering of music features.
+- **Medium Task**: Advanced multi-modal and convolutional VAE architectures with hybrid audio–lyrics representations and comparative clustering analysis.
 
-![t-SNE of VAE Latent Space](results/tsne_vae.png)
+---
 
-<<<<<<< Updated upstream
+## Easy Task (Summary)
+
+In the easy task, a basic VAE was trained on music features and clustered using K-Means.  
+The results demonstrate that VAE-based latent representations outperform PCA-based baselines for unsupervised music clustering.
+
+*(Details and notebooks for the easy task are provided in the repository.)*
+
+---
+
+## ⭐ Medium Task (Main Contribution)
+
+The medium task significantly extends the easy task by incorporating **hybrid features**, **convolutional architectures**, and **comprehensive clustering evaluation**, as required by the project rubric.
+
+### Dataset Used
+
+- **1432 paired audio–lyrics music tracks**
+- Each sample contains:
+  - Audio preview (MP3)
+  - Corresponding song lyrics
+
+The dataset is not included in this repository due to size constraints.
+
+---
+
+### Feature Extraction
+
+**Audio Features**
+- MFCC (Mel-Frequency Cepstral Coefficients)
+- Number of coefficients: 40  
+- Maximum frames: 300  
+- Final audio feature dimension: **12000**
+
+**Lyrics Features**
+- TF-IDF vectorization
+- Maximum vocabulary size: **5000**
+
+---
+
+### Models Implemented
+
+#### 1. Fusion Dense VAE (Audio + Lyrics)
+- Input: Concatenated MFCC + TF-IDF features
+- Encoder–decoder architecture using fully connected layers
+- Learns a joint latent representation of musical and lyrical content
+
+#### 2. Conv1D VAE (Audio-only)
+- Input: MFCC sequences
+- Encoder: 1D convolutional layers to capture temporal structure
+- Decoder: Transposed convolution layers
+- Latent dimension: 16
+- Designed to model local timbral and rhythmic patterns in music
+
+---
+
+### Clustering Methods
+
+Latent representations were clustered using:
+- **KMeans**
+- **Agglomerative Clustering**
+- **DBSCAN**
+
+---
+
+### Evaluation Metrics
+
+Clustering quality was evaluated using:
+- **Silhouette Score**
+- **Davies–Bouldin Index**
+
+These metrics are suitable for unsupervised clustering without ground-truth labels.
+
+---
+
+## How to Reproduce the Medium Task
+
+Run the notebooks in the following order:
+
+1. `medium_01_data_prep.ipynb`  
+2. `medium_02_lyrics_embeddings.ipynb`  
+3. `medium_03_audio_mfcc.ipynb`  
+4. `medium_04_vae_clustering_clean.ipynb`
+
+**Note:**  
+The dataset files (audio, lyrics, and intermediate features) are not included.  
+Users must place the required files in the `data/` directory as described in the notebooks.
+
+---
+
+## Results (Medium Task)
+
+### Quantitative Results
+
+| Method                     | Clusters (k) | Silhouette | Davies–Bouldin |
+|---------------------------|--------------|------------|----------------|
+| **ConvVAE (audio) + KMeans** | 5            | **0.3498** | **0.9217** |
+| Fusion Dense VAE + KMeans | 5            | 0.1848     | 1.4311 |
+| PCA + KMeans (Baseline)   | 5            | 0.0471     | 3.4246 |
+| DBSCAN                    | —            | -0.3183    | 2.1785 |
+
+The ConvVAE-based approach achieves the best clustering performance, indicating the importance of convolutional architectures for modeling audio structure.
+
+---
+
+### Latent Space Visualization
+
+**UMAP projection of ConvVAE latent space (KMeans, k=5):**
+
+![UMAP of ConvVAE latent space](results/plots/latent_umap_convvae.png)
+
+---
+
 ## Conclusion
 
-This project demonstrates that Variational Autoencoders can effectively learn
-meaningful latent representations for unsupervised music clustering, achieving
-better performance than traditional PCA-based methods.
-
-
-=======
->>>>>>> Stashed changes
----
-
-## Conclusion
-
-This project demonstrates that Variational Autoencoders can effectively learn
-meaningful latent representations for unsupervised music clustering, achieving
-better performance than traditional PCA-based methods.
+This project demonstrates that convolutional variational autoencoders significantly improve unsupervised music clustering performance compared to dense VAE and PCA baselines.  
+The results highlight the effectiveness of modeling temporal audio structure using Conv1D architectures and provide a strong foundation for future work on multi-modal music representation learning.
