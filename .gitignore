@@ -1,22 +1,47 @@
+# ===============================
 # Python cache
+# ===============================
 __pycache__/
 *.pyc
 
-# Virtual environment
+# ===============================
+# Virtual environments
+# ===============================
 .venv/
 venv/
 
+# ===============================
 # Data files (DO NOT UPLOAD DATASET)
+# ===============================
 data/
 *.npy
+*.npz
+*.parquet
 
-# Hugging Face cache
+# ===============================
+# Audio files
+# ===============================
+*.mp3
+*.wav
+
+# ===============================
+# Hugging Face/model cache
+# ===============================
 .cache/
 **/.cache/
 
+# ===============================
+# Jupyter
+# ===============================
+.ipynb_checkpoints/
+
+# ===============================
 # OS files
+# ===============================
 .DS_Store
 Thumbs.db
 
+# ===============================
+# Scripts not meant for repo
+# ===============================
 download_dataset.py
-notebooks/
