@@ -1,3 +1,9 @@
+numpy
+tqdm
+sounfile
+umap-learn
+joblib
+pyarrow
 tensorflow
 torch
 scikit-learn
