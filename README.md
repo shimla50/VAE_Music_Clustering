@@ -20,6 +20,15 @@ The goal is to learn meaningful latent representations of music using audio and 
 - Clustering in learned latent space
 - Quantitative evaluation using clustering metrics
 
+### 🔹 Medium Task (Notebook workflow)
+
+The medium task is implemented using Jupyter notebooks.
+
+Run Jupyter Notebook:
+
+```bash
+python -m notebook
+
 ### 🔹 Hard Task
 - **Conditional Variational Autoencoder (CVAE)**
 - Multi-modal learning combining:
