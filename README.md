@@ -1,156 +1,98 @@
-# VAE Music Clustering Project
+# 🎵 VAE Music Clustering
 
-This project implements an unsupervised learning pipeline for clustering hybrid language music tracks using Variational Autoencoders (VAE).
+This project explores music clustering using Variational Autoencoders (VAE) and Conditional Variational Autoencoders (CVAE).  
+The work is structured into three progressive tasks — **Easy**, **Medium**, and **Hard** — following increasing model complexity and dataset richness.
 
-## Project Structure
-
-- `data/`: Stores the datasets (audio and lyrics).
-- `notebooks/`: Contains Jupyter notebooks for exploratory data analysis and visualizations.
-- `src/`: Contains Python scripts for VAE implementation, data processing, clustering, and evaluation.
-- `results/`: Stores output results such as latent space visualizations and clustering metrics.
-
-## Requirements
-
-To install the required libraries, run:
-pip install -r requirements.txt
- 
-
-
-# VAE Music Clustering Project
-
-This project implements an unsupervised learning pipeline for clustering music tracks using Variational Autoencoders (VAE).  
-The work is divided into two parts: **Easy Task** and **Medium Task**, following the course project requirements.
+The goal is to learn meaningful latent representations of music using audio and lyrical information, and evaluate clustering quality using standard unsupervised metrics.
 
 ---
 
-## Project Overview
+## 📌 Tasks Overview
 
-- **Easy Task**: Basic VAE-based clustering of music features.
-- **Medium Task**: Advanced multi-modal and convolutional VAE architectures with hybrid audio–lyrics representations and comparative clustering analysis.
+### 🔹 Easy Task
+- Basic feature extraction
+- Traditional clustering techniques
+- Introduction to unsupervised learning on music data
 
----
+### 🔹 Medium Task
+- Variational Autoencoder (VAE) for latent representation learning
+- Audio + lyrics embeddings
+- Clustering in learned latent space
+- Quantitative evaluation using clustering metrics
 
-## Easy Task (Summary)
-
-In the easy task, a basic VAE was trained on music features and clustered using K-Means.  
-The results demonstrate that VAE-based latent representations outperform PCA-based baselines for unsupervised music clustering.
-
-*(Details and notebooks for the easy task are provided in the repository.)*
-
----
-
-## ⭐ Medium Task (Main Contribution)
-
-The medium task significantly extends the easy task by incorporating **hybrid features**, **convolutional architectures**, and **comprehensive clustering evaluation**, as required by the project rubric.
-
-### Dataset Used
-
-- **1432 paired audio–lyrics music tracks**
-- Each sample contains:
-  - Audio preview (MP3)
-  - Corresponding song lyrics
-
-The dataset is not included in this repository due to size constraints.
+### 🔹 Hard Task
+- **Conditional Variational Autoencoder (CVAE)**
+- Multi-modal learning combining:
+  - Audio features
+  - Lyrics embeddings
+  - Genre conditioning
+- Extensive baseline comparisons:
+  - PCA + KMeans
+  - Autoencoder + KMeans
+  - Direct feature clustering
+- Detailed visualizations and reconstructions
 
 ---
 
-### Feature Extraction
+## 📂 Dataset Sources
 
-**Audio Features**
-- MFCC (Mel-Frequency Cepstral Coefficients)
-- Number of coefficients: 40  
-- Maximum frames: 300  
-- Final audio feature dimension: **12000**
+This project uses publicly available and widely used datasets:
 
-**Lyrics Features**
-- TF-IDF vectorization
-- Maximum vocabulary size: **5000**
+- **Jamendo Lyrics Dataset**  
+  https://github.com/f90/jamendolyrics
 
----
+- **Jamendo Audio Dataset (Kaggle)**  
+  https://www.kaggle.com/datasets/andradaolteanu/jamendo-music-dataset
 
-### Models Implemented
-
-#### 1. Fusion Dense VAE (Audio + Lyrics)
-- Input: Concatenated MFCC + TF-IDF features
-- Encoder–decoder architecture using fully connected layers
-- Learns a joint latent representation of musical and lyrical content
-
-#### 2. Conv1D VAE (Audio-only)
-- Input: MFCC sequences
-- Encoder: 1D convolutional layers to capture temporal structure
-- Decoder: Transposed convolution layers
-- Latent dimension: 16
-- Designed to model local timbral and rhythmic patterns in music
+> Raw audio files and large feature arrays are **not uploaded to GitHub** and are ignored via `.gitignore`.
 
 ---
 
-### Clustering Methods
+## 🗂️ Project Structure
 
-Latent representations were clustered using:
-- **KMeans**
-- **Agglomerative Clustering**
-- **DBSCAN**
+VAE_Music_Clustering/
+│
+├── data/
+│ ├── raw/
+│ │ ├── easy/
+│ │ ├── medium/
+│ │ └── hard/
+│ └── processed/
+│ ├── easy/
+│ ├── medium/
+│ └── hard/
+│
+├── notebooks/
+│ ├── easy/
+│ ├── medium/
+│ └── hard/
+│
+├── src/
+│ ├── common/ # Shared utilities (dataset, VAE, clustering, evaluation)
+│ ├── easy/
+│ ├── medium/
+│ └── hard/
+│
+├── results/
+│ ├── easy/
+│ ├── medium/
+│ │ ├── clustering_metrics.csv
+│ │ └── plots/
+│ └── hard/
+│ └── plots/
+│
+├── requirements.txt
+├── .gitignore
+└── README.md
 
----
-
-### Evaluation Metrics
-
-Clustering quality was evaluated using:
-- **Silhouette Score**
-- **Davies–Bouldin Index**
-
-These metrics are suitable for unsupervised clustering without ground-truth labels.
-
----
-
-## How to Reproduce the Medium Task
-
-### Reproducing without included data
-
-Due to the large size of the dataset, audio files and intermediate data
-are not included in this GitHub repository.
-
-To reproduce the medium task experiments, the required data must be placed
-manually in the following directory structure:
-
-Once the data is placed correctly, run the notebooks in the following order:
-
-1. `notebooks/medium_01_data_prep.ipynb`
-2. `notebooks/medium_02_lyrics_embeddings.ipynb`
-3. `notebooks/medium_03_audio_mfcc.ipynb`
-4. `notebooks/medium_04_vae_clustering_clean.ipynb`
-
-
-**Note:**  
-The dataset files (audio, lyrics, and intermediate features) are not included.  
-Users must place the required files in the `data/` directory as described in the notebooks.
 
 ---
 
-## Results (Medium Task)
+## ⚙️ Installation & Setup
 
-### Quantitative Results
+### 1️⃣ Create virtual environment (recommended)
+```bash
+python -m venv venv
+source venv/bin/activate   # Linux / Mac
+venv\Scripts\activate      # Windows
 
-| Method                     | Clusters (k) | Silhouette | Davies–Bouldin |
-|---------------------------|--------------|------------|----------------|
-| **ConvVAE (audio) + KMeans** | 5            | **0.3498** | **0.9217** |
-| Fusion Dense VAE + KMeans | 5            | 0.1848     | 1.4311 |
-| PCA + KMeans (Baseline)   | 5            | 0.0471     | 3.4246 |
-| DBSCAN                    | —            | -0.3183    | 2.1785 |
-
-The ConvVAE-based approach achieves the best clustering performance, indicating the importance of convolutional architectures for modeling audio structure.
-
----
-
-### Latent Space Visualization
-
-**UMAP projection of ConvVAE latent space (KMeans, k=5):**
-
-![UMAP of ConvVAE latent space](results/plots/latent_umap_convvae.png)
-
----
-
-## Conclusion
-
-This project demonstrates that convolutional variational autoencoders significantly improve unsupervised music clustering performance compared to dense VAE and PCA baselines.  
-The results highlight the effectiveness of modeling temporal audio structure using Conv1D architectures and provide a strong foundation for future work on multi-modal music representation learning.
