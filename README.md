@@ -7,9 +7,26 @@ The work is organized into three levels: **Easy**, **Medium**, and **Hard**, sho
 
 ## ✅ Tasks Overview
 
-### Easy Task
-- Basic preprocessing and clustering (traditional baseline level)
-- Folder: `src/easy/` (if implemented) and results under `results/easy/`
+Easy Task Results
+
+Dataset: English + Bangla lyrics subset (n=1577)
+
+Features: TF-IDF (3000 dims)
+
+VAE latent size: 8
+
+Clustering: KMeans (k=2)
+
+Metrics:
+
+VAE(latent)+KMeans: Silhouette = 0.144, Calinski-Harabasz = 272.07
+
+PCA(8)+KMeans: Silhouette = 0.424, Calinski-Harabasz = 1079.14
+
+Visualizations: t-SNE plots saved in results/easy/plots/
+
+Short interpretation (1–2 lines)
+PCA baseline performs better because TF-IDF space already separates languages strongly, while the VAE is trained only for reconstruction and may not preserve language-separating structure in latent space.
 
 ### Medium Task
 - Notebook-based workflow: data prep → lyrics embedding → audio MFCC → VAE latent clustering
