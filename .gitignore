@@ -1,47 +1,22 @@
-# ===============================
-# Python cache
-# ===============================
+# virtual environments
+.venv/
+venv/
+cse425project_env/
+
+# python cache
 __pycache__/
 *.pyc
 
-# ===============================
-# Virtual environments
-# ===============================
-.venv/
-venv/
-
-# ===============================
-# Data files (DO NOT UPLOAD DATASET)
-# ===============================
-data/
-*.npy
-*.npz
-*.parquet
-
-# ===============================
-# Audio files
-# ===============================
+# data (do NOT push raw datasets)
+data/raw/
+data/processed/
 *.mp3
 *.wav
 
-# ===============================
-# Hugging Face/model cache
-# ===============================
-.cache/
-**/.cache/
+# large numpy / model files
+*.npy
+*.npz
+*.pth
 
-# ===============================
-# Jupyter
-# ===============================
+# notebook checkpoints
 .ipynb_checkpoints/
-
-# ===============================
-# OS files
-# ===============================
-.DS_Store
-Thumbs.db
-
-# ===============================
-# Scripts not meant for repo
-# ===============================
-download_dataset.py
