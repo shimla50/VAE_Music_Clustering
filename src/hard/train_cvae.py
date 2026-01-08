@@ -1,4 +1,5 @@
 print("CVAE training started", flush=True)
+
 import os
 import json
 import numpy as np
@@ -8,15 +9,18 @@ from torch.utils.data import Dataset, DataLoader
 import matplotlib.pyplot as plt
 import pandas as pd
 
+# =========================
+# CLEAN OUTPUT PATHS
+# =========================
+RESULTS_DIR = os.path.join("results", "hard")
+PLOTS_DIR = os.path.join(RESULTS_DIR, "plots")
+os.makedirs(RESULTS_DIR, exist_ok=True)
+os.makedirs(PLOTS_DIR, exist_ok=True)
+
 # ===== paths =====
 X_PATH = os.path.join("data", "hard", "features", "X_fusion.npy")
 Y_PATH = os.path.join("data", "hard", "features", "y_genre.npy")
 GENRE_MAP_PATH = os.path.join("data", "hard", "features", "genre_map.json")
-
-OUT_RESULTS = "results"
-OUT_PLOTS = os.path.join("results", "plots_hard")
-os.makedirs(OUT_RESULTS, exist_ok=True)
-os.makedirs(OUT_PLOTS, exist_ok=True)
 
 RANDOM_SEED = 42
 torch.manual_seed(RANDOM_SEED)
@@ -32,7 +36,7 @@ LR = 1e-3
 LATENT_DIM = 32
 HIDDEN1 = 512
 HIDDEN2 = 256
-BETA = 1.0  # change to 2.0 if you want Beta-VAE style (but keep CVAE first)
+BETA = 1.0
 
 def one_hot(y: np.ndarray, num_classes: int) -> np.ndarray:
     out = np.zeros((len(y), num_classes), dtype=np.float32)
@@ -58,7 +62,6 @@ class CVAE(nn.Module):
         self.y_dim = y_dim
         self.latent_dim = latent_dim
 
-        # Encoder: [x, y] -> mu, logvar
         self.enc = nn.Sequential(
             nn.Linear(x_dim + y_dim, h1),
             nn.ReLU(),
@@ -68,7 +71,6 @@ class CVAE(nn.Module):
         self.mu = nn.Linear(h2, latent_dim)
         self.logvar = nn.Linear(h2, latent_dim)
 
-        # Decoder: [z, y] -> x_hat
         self.dec = nn.Sequential(
             nn.Linear(latent_dim + y_dim, h2),
             nn.ReLU(),
@@ -96,23 +98,20 @@ class CVAE(nn.Module):
         return x_hat, mu, logvar, z
 
 def loss_fn(x, x_hat, mu, logvar, beta=1.0):
-    # recon loss (MSE)
     recon = torch.mean((x_hat - x) ** 2)
-    # KL divergence
     kl = -0.5 * torch.mean(1 + logvar - mu.pow(2) - torch.exp(logvar))
     return recon + beta * kl, recon.detach(), kl.detach()
 
 def main():
     print("Loading features...")
-    X = np.load(X_PATH)  # (N, 5016)
-    y = np.load(Y_PATH)  # (N,)
+    X = np.load(X_PATH)
+    y = np.load(Y_PATH)
     with open(GENRE_MAP_PATH, "r", encoding="utf-8") as f:
         genre_map = json.load(f)
 
     num_classes = len(genre_map)
     y_oh = one_hot(y, num_classes)
 
-    # Train/Val split
     idx = np.arange(len(X))
     np.random.shuffle(idx)
     split = int(0.9 * len(X))
@@ -141,7 +140,7 @@ def main():
             yb_oh = yb_oh.to(DEVICE)
 
             x_hat, mu, logvar, _ = model(xb, yb_oh)
-            loss, recon, kl = loss_fn(xb, x_hat, mu, logvar, beta=BETA)
+            loss, _, _ = loss_fn(xb, x_hat, mu, logvar, beta=BETA)
 
             opt.zero_grad()
             loss.backward()
@@ -166,37 +165,33 @@ def main():
         print(f"Epoch {epoch:02d}/{EPOCHS} | train={train_loss:.4f} | val={val_loss:.4f}")
 
     # Save model
-    model_path = os.path.join(OUT_RESULTS, "cvae.pth")
+    model_path = os.path.join(RESULTS_DIR, "cvae.pth")
     torch.save(model.state_dict(), model_path)
     print("Saved model:", model_path)
 
-    # Extract latent means (mu) for all points using TRUE genre condition (teacher forcing)
+    # Extract latent means
     model.eval()
     with torch.no_grad():
         X_t = torch.tensor(X, dtype=torch.float32).to(DEVICE)
         yoh_t = torch.tensor(y_oh, dtype=torch.float32).to(DEVICE)
-        mu, logvar = model.encode(X_t, yoh_t)
+        mu, _ = model.encode(X_t, yoh_t)
         Z = mu.cpu().numpy().astype(np.float32)
 
-    z_path = os.path.join(OUT_RESULTS, "latent_hard.npy")
+    z_path = os.path.join(RESULTS_DIR, "latent_hard.npy")
     np.save(z_path, Z)
     print("Saved latent:", z_path, Z.shape)
 
-    # ===== NEW: Reconstruction examples / errors (Hard-task requirement) =====
-    model.eval()
+    # Reconstruction
     with torch.no_grad():
-        # Reconstruct X using teacher-forced condition
         x_hat = model.decode(torch.tensor(Z, dtype=torch.float32).to(DEVICE), yoh_t).cpu().numpy().astype(np.float32)
 
-    # per-sample MSE
     mse = np.mean((x_hat - X.astype(np.float32)) ** 2, axis=1)
 
-    # save reconstruction errors
     df_err = pd.DataFrame({"recon_mse": mse})
-    df_err.to_csv(os.path.join(OUT_RESULTS, "recon_errors.csv"), index=False)
-    print("Saved recon errors: results/recon_errors.csv")
+    err_path = os.path.join(RESULTS_DIR, "recon_errors.csv")
+    df_err.to_csv(err_path, index=False)
+    print("Saved recon errors:", err_path)
 
-    # save top/bottom examples indices (for report)
     top_idx = np.argsort(mse)[:10]
     bottom_idx = np.argsort(mse)[-10:][::-1]
     df_examples = pd.DataFrame({
@@ -204,21 +199,21 @@ def main():
         "index": np.concatenate([top_idx, bottom_idx]),
         "recon_mse": np.concatenate([mse[top_idx], mse[bottom_idx]])
     })
-    df_examples.to_csv(os.path.join(OUT_RESULTS, "recon_examples_top_bottom.csv"), index=False)
-    print("Saved recon example indices: results/recon_examples_top_bottom.csv")
+    ex_path = os.path.join(RESULTS_DIR, "recon_examples_top_bottom.csv")
+    df_examples.to_csv(ex_path, index=False)
+    print("Saved recon example indices:", ex_path)
 
-    # plot histogram
     plt.figure()
     plt.hist(mse, bins=50)
     plt.title("Reconstruction error (MSE) distribution")
     plt.xlabel("MSE")
     plt.ylabel("Count")
     plt.tight_layout()
-    plt.savefig(os.path.join(OUT_PLOTS, "recon_error_hist.png"), dpi=150)
+    p1 = os.path.join(PLOTS_DIR, "recon_error_hist.png")
+    plt.savefig(p1, dpi=150)
     plt.close()
-    print("Saved plot: results/plots_hard/recon_error_hist.png")
+    print("Saved plot:", p1)
 
-    # Plot loss curve
     plt.figure()
     plt.plot(train_losses, label="train")
     plt.plot(val_losses, label="val")
@@ -227,9 +222,10 @@ def main():
     plt.legend()
     plt.title("CVAE training loss")
     plt.tight_layout()
-    plt.savefig(os.path.join(OUT_PLOTS, "cvae_loss.png"), dpi=150)
+    p2 = os.path.join(PLOTS_DIR, "cvae_loss.png")
+    plt.savefig(p2, dpi=150)
     plt.close()
-    print("Saved plot: results/plots_hard/cvae_loss.png")
+    print("Saved plot:", p2)
 
 if __name__ == "__main__":
     main()

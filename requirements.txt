@@ -1,6 +1,6 @@
 numpy
 tqdm
-sounfile
+soundfile
 umap-learn
 joblib
 pyarrow

@@ -9,8 +9,13 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from scipy import sparse
 import joblib
 
+# === Hard task feature output directory ===
+FEATURES_DIR = "data/hard/features"
+os.makedirs(FEATURES_DIR, exist_ok=True)
+
+
 # ====== paths ======
-CSV_PATH = r"C:\Users\HP\Documents\425 Datasets collection\Hard task dataset\songs.csv"
+CSV_PATH = r"data/raw/Hard task dataset/songs.csv"
 
 OUT_PROCESSED = os.path.join("data", "hard", "processed")
 OUT_FEATURES = os.path.join("data", "hard", "features")
@@ -157,7 +162,7 @@ def main():
     print("Saved X_audio.npy")
 
     # ====== 10) build TF-IDF ======
-    tfidf = TfidfVectorizer(max_features=TFIDF_MAX_FEATURES, min_df=2, max_df=0.9, norm = "12")
+    tfidf = TfidfVectorizer(max_features=3000, norm="l2")
     X_lyrics = tfidf.fit_transform(df_bal["lyrics"].values)
     sparse.save_npz(os.path.join(OUT_FEATURES, "X_lyrics_tfidf.npz"), X_lyrics)
     joblib.dump(tfidf, os.path.join(OUT_FEATURES, "tfidf_vectorizer.joblib"))
